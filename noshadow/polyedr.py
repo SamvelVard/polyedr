@@ -2,7 +2,6 @@ from math import pi
 from common.r3 import R3
 from common.tk_drawer import TkDrawer
 
-
 class Edge:
     """ Ребро полиэдра """
     # Параметры конструктора: начало и конец ребра (точки в R3)
@@ -36,7 +35,8 @@ class Polyedr:
                     buf = line.split()
                     # коэффициент гомотетии
                     c = float(buf.pop(0))
-                    # углы Эйлера, определяющие вращение
+                    # углы Эйлера, определяющие вращение`
+
                     alpha, beta, gamma = (float(x) * pi / 180.0 for x in buf)
                 elif i == 1:
                     # во второй строке число вершин, граней и рёбер полиэдра
@@ -62,5 +62,6 @@ class Polyedr:
     # Метод изображения полиэдра
     def draw(self, tk):
         tk.clean()
+
         for e in self.edges:
             tk.draw_line(e.beg, e.fin)

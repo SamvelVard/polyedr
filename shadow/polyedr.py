@@ -1,4 +1,4 @@
-from math import pi
+from math import pi, sqrt
 from functools import reduce
 from operator import add
 from common.r3 import R3
@@ -40,8 +40,16 @@ class Edge:
     # Параметры конструктора: начало и конец ребра (точки в R3)
     def __init__(self, beg, fin):
         self.beg, self.fin = beg, fin
+        self.summa = 0
         # Список «просветов»
         self.gaps = [Segment(Edge.SBEG, Edge.SFIN)]
+
+    def calculate_good_points_sum(self, homothety):
+        tmp_x = abs(self.fin.x - self.beg.x) / (2 * homothety)
+        tmp_y = abs(self.fin.y - self.beg.y) / (2 * homothety)
+        tmp_z = abs(self.fin.z - self.beg.z) / (2 * homothety)
+        if (-1 < tmp_x < 0.5 or 0.5 < tmp_x < 1) and (-1 < tmp_y < 0.5 or 0.5 < tmp_y < 1) and (-1 < tmp_z < 0.5 or 0.5 < tmp_z < 1):
+            return sqrt((self.fin.x - self.beg.x) ** 2 + (self.fin.y - self.beg.y) ** 2 + (self.fin.z - self.beg.z) ** 2)
 
     # Учёт тени от одной грани
     def shadow(self, facet):
@@ -136,6 +144,7 @@ class Polyedr:
                     buf = line.split()
                     # коэффициент гомотетии
                     c = float(buf.pop(0))
+                    self.homothety = c
                     # углы Эйлера, определяющие вращение
                     alpha, beta, gamma = (float(x) * pi / 180.0 for x in buf)
                 elif i == 1:
@@ -160,10 +169,16 @@ class Polyedr:
                     self.facets.append(Facet(vertexes))
 
     # Метод изображения полиэдра
-    def draw(self, tk):  # pragma: no cover
+    def draw(self, tk):
         tk.clean()
+        self.summa = 0
         for e in self.edges:
             for f in self.facets:
                 e.shadow(f)
             for s in e.gaps:
+                length = e.calculate_good_points_sum(self.homothety)
+                print(length)
+                if length is not None:
+                    self.summa += length
                 tk.draw_line(e.r3(s.beg), e.r3(s.fin))
+        return self.summa
