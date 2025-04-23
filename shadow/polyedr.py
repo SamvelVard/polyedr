@@ -45,11 +45,11 @@ class Edge:
         self.gaps = [Segment(Edge.SBEG, Edge.SFIN)]
 
     def calculate_good_points_sum(self, homothety):
-        tmp_x = abs(self.fin.x - self.beg.x) / (2 * homothety)
-        tmp_y = abs(self.fin.y - self.beg.y) / (2 * homothety)
-        tmp_z = abs(self.fin.z - self.beg.z) / (2 * homothety)
-        if (-1 < tmp_x < 0.5 or 0.5 < tmp_x < 1) and (-1 < tmp_y < 0.5 or 0.5 < tmp_y < 1) and (-1 < tmp_z < 0.5 or 0.5 < tmp_z < 1):
-            return sqrt((self.fin.x - self.beg.x) ** 2 + (self.fin.y - self.beg.y) ** 2 + (self.fin.z - self.beg.z) ** 2)
+        tmp_x = (abs(self.fin.x) + abs(self.beg.x)) / (2 * homothety)
+        tmp_y = (abs(self.fin.y) + abs(self.beg.y)) / (2 * homothety)
+        tmp_z = (abs(self.fin.z) + abs(self.beg.z)) / (2 * homothety)
+        if (-1 < tmp_x < -0.5 or 0.5 < tmp_x < 1) and (-1 < tmp_y < -0.5 or 0.5 < tmp_y < 1) and (-1 < tmp_z < -0.5 or 0.5 < tmp_z < 1):
+            return sqrt((self.fin.x - self.beg.x) ** 2 + (self.fin.y - self.beg.y) ** 2)
 
     # Учёт тени от одной грани
     def shadow(self, facet):
@@ -177,7 +177,6 @@ class Polyedr:
                 e.shadow(f)
             for s in e.gaps:
                 length = e.calculate_good_points_sum(self.homothety)
-                print(length)
                 if length is not None:
                     self.summa += length
                 tk.draw_line(e.r3(s.beg), e.r3(s.fin))
