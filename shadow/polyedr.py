@@ -49,7 +49,7 @@ class Edge:
         tmp_y = (abs(self.fin.y) + abs(self.beg.y)) / (2 * homothety)
         tmp_z = (abs(self.fin.z) + abs(self.beg.z)) / (2 * homothety)
         if (-1 < tmp_x < -0.5 or 0.5 < tmp_x < 1) and (-1 < tmp_y < -0.5 or 0.5 < tmp_y < 1) and (-1 < tmp_z < -0.5 or 0.5 < tmp_z < 1):
-            return sqrt((self.fin.x - self.beg.x) ** 2 + (self.fin.y - self.beg.y) ** 2)
+            return sqrt((self.fin.x - self.beg.x) ** 2 + (self.fin.y - self.beg.y) ** 2 + (self.fin.z - self.beg.z) ** 2)
 
     # Учёт тени от одной грани
     def shadow(self, facet):
