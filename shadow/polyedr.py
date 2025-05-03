@@ -1,4 +1,4 @@
-from math import pi, sqrt
+from math import pi, sqrt, cos, radians
 from functools import reduce
 from operator import add
 from common.r3 import R3
@@ -44,12 +44,16 @@ class Edge:
         # Список «просветов»
         self.gaps = [Segment(Edge.SBEG, Edge.SFIN)]
 
-    def calculate_good_points_sum(self, homothety):
+    def calculate_good_points_sum(self, homothety, alpha, beta, gamma):
         tmp_x = (abs(self.fin.x) + abs(self.beg.x)) / (2 * homothety)
         tmp_y = (abs(self.fin.y) + abs(self.beg.y)) / (2 * homothety)
         tmp_z = (abs(self.fin.z) + abs(self.beg.z)) / (2 * homothety)
+        # print(tmp_x, tmp_y, tmp_z)
+        print(((self.fin.x - self.beg.x)),((self.fin.y - self.beg.y)),((self.fin.z - self.beg.z)))
+        # print(cos(radians(alpha)), cos(radians(beta)), cos(radians(gamma)))
+        # print((((self.fin.x - self.beg.x)*cos(radians(alpha))), ((self.fin.y - self.beg.y)*cos(radians(beta))), ((self.fin.z - self.beg.z)*cos(radians(gamma)))))
         if (-1 < tmp_x < -0.5 or 0.5 < tmp_x < 1) and (-1 < tmp_y < -0.5 or 0.5 < tmp_y < 1) and (-1 < tmp_z < -0.5 or 0.5 < tmp_z < 1):
-            return sqrt((self.fin.x - self.beg.x) ** 2 + (self.fin.y - self.beg.y) ** 2 + (self.fin.z - self.beg.z) ** 2)
+            return sqrt(((self.fin.x - self.beg.x)*cos(alpha))** 2 + ((self.fin.y - self.beg.y)*cos(beta)) ** 2 + ((self.fin.z - self.beg.z)*cos(gamma)) ** 2)
 
     # Учёт тени от одной грани
     def shadow(self, facet):
@@ -146,7 +150,7 @@ class Polyedr:
                     c = float(buf.pop(0))
                     self.homothety = c
                     # углы Эйлера, определяющие вращение
-                    alpha, beta, gamma = (float(x) * pi / 180.0 for x in buf)
+                    self.alpha, self.beta, self.gamma = (float(x) * pi / 180.0 for x in buf)
                 elif i == 1:
                     # во второй строке число вершин, граней и рёбер полиэдра
                     nv, nf, ne = (int(x) for x in line.split())
@@ -154,7 +158,7 @@ class Polyedr:
                     # задание всех вершин полиэдра
                     x, y, z = (float(x) for x in line.split())
                     self.vertexes.append(R3(x, y, z).rz(
-                        alpha).ry(beta).rz(gamma) * c)
+                        self.alpha).ry(self.beta).rz(self.gamma) * c)
                 else:
                     # вспомогательный массив
                     buf = line.split()
@@ -176,8 +180,9 @@ class Polyedr:
             for f in self.facets:
                 e.shadow(f)
             for s in e.gaps:
-                length = e.calculate_good_points_sum(self.homothety)
+                length = e.calculate_good_points_sum(self.homothety, self.alpha, self.beta, self.gamma)
                 if length is not None:
+                    # print(length)
                     self.summa += length
                 tk.draw_line(e.r3(s.beg), e.r3(s.fin))
         return self.summa
