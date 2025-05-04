@@ -16,6 +16,7 @@ class TestPolyedr(unittest.TestCase):
         cls.test_file_modify2 = os.path.join(cls.data_dir, "modify2.geom")
         cls.test_file_modify3 = os.path.join(cls.data_dir, "modify3.geom")
         cls.test_file_modify4 = os.path.join(cls.data_dir, "modify4.geom")
+        cls.test_file_modify5 = os.path.join(cls.data_dir, "modify5.geom")
 
     def test_modify1_sum(self):
         mock_tk = MagicMock()  # глушилка TkDrawer
@@ -43,6 +44,13 @@ class TestPolyedr(unittest.TestCase):
         polyedr = Polyedr(self.test_file_modify4)
         result_sum = polyedr.draw(mock_tk)
         expected_sum = 560.0
+        self.assertAlmostEqual(round(result_sum), expected_sum)
+
+    def test_modify5_sum(self):
+        mock_tk = MagicMock()  # глушилка TkDrawer
+        polyedr = Polyedr(self.test_file_modify5)
+        result_sum = polyedr.draw(mock_tk)
+        expected_sum = 1680.0
         self.assertAlmostEqual(round(result_sum), expected_sum)
 
 
