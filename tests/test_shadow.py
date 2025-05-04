@@ -42,7 +42,7 @@ class TestPolyedr(unittest.TestCase):
         mock_tk = MagicMock()  # глушилка TkDrawer
         polyedr = Polyedr(self.test_file_modify4)
         result_sum = polyedr.draw(mock_tk)
-        expected_sum = 280.0
+        expected_sum = 560.0
         self.assertAlmostEqual(round(result_sum), expected_sum)
 
 

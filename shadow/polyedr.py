@@ -1,3 +1,4 @@
+from email.utils import encode_rfc2231
 from math import pi, sqrt, cos, radians
 from functools import reduce
 from operator import add
@@ -44,16 +45,20 @@ class Edge:
         # Список «просветов»
         self.gaps = [Segment(Edge.SBEG, Edge.SFIN)]
 
-    def calculate_good_points_sum(self, homothety, alpha, beta, gamma):
-        tmp_x = (abs(self.fin.x) + abs(self.beg.x)) / (2 * homothety)
-        tmp_y = (abs(self.fin.y) + abs(self.beg.y)) / (2 * homothety)
-        tmp_z = (abs(self.fin.z) + abs(self.beg.z)) / (2 * homothety)
+    def calculate_good_points_sum(self, fin, beg, homothety, alpha, beta, gamma):
+        tmp_x = (abs(fin.x) + abs(beg.x)) / (2 * homothety)
+        tmp_y = (abs(fin.y) + abs(beg.y)) / (2 * homothety)
+        tmp_z = (abs(fin.z) + abs(beg.z)) / (2 * homothety)
         # print(tmp_x, tmp_y, tmp_z)
-        print(((self.fin.x - self.beg.x)),((self.fin.y - self.beg.y)),((self.fin.z - self.beg.z)))
+        # print(fin.x, beg.x, fin.y, beg.y, fin.z, beg.z)
+        # print(cos(alpha), cos(beta), cos(gamma))
+        # print(cos(radians(alpha)), cos(radians(beta)), cos(radians(gamma)))
+        # print((-1 < tmp_x < -0.5 or 0.5 < tmp_x < 1) and (-1 < tmp_y < -0.5 or 0.5 < tmp_y < 1) and (-1 < tmp_z < -0.5 or 0.5 < tmp_z < 1))
+        # print(((fin.x - beg.x)),((fin.y - beg.y)))
         # print(cos(radians(alpha)), cos(radians(beta)), cos(radians(gamma)))
         # print((((self.fin.x - self.beg.x)*cos(radians(alpha))), ((self.fin.y - self.beg.y)*cos(radians(beta))), ((self.fin.z - self.beg.z)*cos(radians(gamma)))))
         if (-1 < tmp_x < -0.5 or 0.5 < tmp_x < 1) and (-1 < tmp_y < -0.5 or 0.5 < tmp_y < 1) and (-1 < tmp_z < -0.5 or 0.5 < tmp_z < 1):
-            return sqrt(((self.fin.x - self.beg.x)*cos(alpha))** 2 + ((self.fin.y - self.beg.y)*cos(beta)) ** 2 + ((self.fin.z - self.beg.z)*cos(gamma)) ** 2)
+            return sqrt(((fin.x - beg.x)*cos(radians(alpha)))** 2 + ((fin.y - beg.y)*cos(radians(beta))) ** 2)
 
     # Учёт тени от одной грани
     def shadow(self, facet):
@@ -180,9 +185,10 @@ class Polyedr:
             for f in self.facets:
                 e.shadow(f)
             for s in e.gaps:
-                length = e.calculate_good_points_sum(self.homothety, self.alpha, self.beta, self.gamma)
+                length = e.calculate_good_points_sum(e.r3(s.beg), e.r3(s.fin), self.homothety, self.alpha, self.beta, self.gamma)
                 if length is not None:
                     # print(length)
                     self.summa += length
+                # print(e.r3(s.beg).x, e.r3(s.fin).x, e.r3(s.beg).y, e.r3(s.fin).y, e.r3(s.beg).z, e.r3(s.fin).z)
                 tk.draw_line(e.r3(s.beg), e.r3(s.fin))
         return self.summa
